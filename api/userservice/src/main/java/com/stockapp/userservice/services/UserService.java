@@ -31,7 +31,8 @@ public class UserService {
         log.info("[RequestID: {}] Starting validation if request is valid.", requestID);
         userValidator.validateUserNullFields(requestID, userRequest);
         userValidator.validateBirthdateIsValid(requestID, userRequest.birthdate());
-        userValidator.findUserEmailIsAlreadyExists(requestID, userRequest.email());
+        userValidator.validateUserEmailIsAlreadyExists(requestID, userRequest.email());
+        userValidator.validatePasswordLength(requestID, userRequest.password());
         var modifiedUser = userUtils.encryptPassword(requestID, userRequest);
         log.info("[RequestID: {}] Mapping user request will be saved.", requestID);
         var user = userMapper.toUser(modifiedUser);

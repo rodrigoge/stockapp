@@ -18,8 +18,8 @@ public class UserUtils {
         var encryptedPassword = passwordEncoder.encode(userRequest.password());
         var modifiedUser = new UserRequest(
                 userRequest.name(),
-                userRequest.email(),
                 encryptedPassword,
+                userRequest.email(),
                 userRequest.birthdate()
         );
         log.info("[RequestID: {}] Finishing encrypting password.", requestID);

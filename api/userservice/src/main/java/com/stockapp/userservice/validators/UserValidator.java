@@ -64,7 +64,7 @@ public class UserValidator {
         log.info("[RequestID: {}] Finishing validation if birthdate field is valid.", requestID);
     }
 
-    public void findUserEmailIsAlreadyExists(String requestID, String email) {
+    public void validateUserEmailIsAlreadyExists(String requestID, String email) {
         log.info("[RequestID: {}] Validating if email {} is already exists.", requestID, email);
         var user = userRepository.findByEmail(email);
         if (!ObjectUtils.isEmpty(user)) throw new FlowException(
@@ -74,5 +74,22 @@ public class UserValidator {
                 "[RequestID: " + requestID + "] Error: E-mail " + email + " is already registered."
         );
         log.info("[RequestID: {}] Finishing validation if email is already exists.", requestID);
+    }
+
+    public void validatePasswordLength(String requestID, String password) {
+        log.info("[RequestID: {}] Validating if password length is valid.", requestID);
+        if (password.length() < 6) throw new FlowException(
+                requestID,
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(),
+                "[RequestID: " + requestID + "] Error: Password is much shorter."
+        );
+        if (password.length() > 16) throw new FlowException(
+                requestID,
+                HttpStatus.BAD_REQUEST,
+                LocalDateTime.now(),
+                "[RequestID: " + requestID + "] Error: Password is much bigger."
+        );
+        log.info("[RequestID: {}] Finishing validation password length is valid.", requestID);
     }
 }
