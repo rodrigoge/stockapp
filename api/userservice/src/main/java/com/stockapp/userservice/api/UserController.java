@@ -1,7 +1,10 @@
 package com.stockapp.userservice.api;
 
+import com.stockapp.userservice.models.AuthenticationResponse;
+import com.stockapp.userservice.models.LoginRequest;
 import com.stockapp.userservice.models.UserRequest;
 import com.stockapp.userservice.models.UserResponse;
+import com.stockapp.userservice.services.AuthenticationService;
 import com.stockapp.userservice.services.UserService;
 import jakarta.validation.Valid;
 import lombok.extern.log4j.Log4j2;
@@ -22,6 +25,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private AuthenticationService authenticationService;
+
     @PostMapping
     public ResponseEntity<UserResponse> createUser(@RequestHeader String requestID,
                                                    @Valid @RequestBody UserRequest userRequest) {
@@ -29,5 +35,14 @@ public class UserController {
         var userResponse = userService.createUser(requestID, userRequest);
         log.info("[RequestID: {}] Finishing the create new user.", requestID);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthenticationResponse> login(@RequestHeader String requestID,
+                                                        @Valid @RequestBody LoginRequest loginRequest) {
+        log.info("[RequestID: {}] Starting the login user flow.", requestID);
+        var authenticationResponse = authenticationService.login(requestID, loginRequest);
+        log.info("[RequestID: {}] Finishing the login user flow.", requestID);
+        return ResponseEntity.status(HttpStatus.OK).body(authenticationResponse);
     }
 }

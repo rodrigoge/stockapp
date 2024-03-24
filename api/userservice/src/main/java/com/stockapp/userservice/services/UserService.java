@@ -1,6 +1,7 @@
 package com.stockapp.userservice.services;
 
 import com.stockapp.userservice.db.UserRepository;
+import com.stockapp.userservice.exceptions.FlowException;
 import com.stockapp.userservice.mappers.UserMapper;
 import com.stockapp.userservice.models.UserRequest;
 import com.stockapp.userservice.models.UserResponse;
@@ -8,7 +9,11 @@ import com.stockapp.userservice.utils.UserUtils;
 import com.stockapp.userservice.validators.UserValidator;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 @Log4j2
@@ -42,5 +47,19 @@ public class UserService {
         var userResponse = userMapper.toUserResponse(userSaved);
         log.info("[RequestID: {}] Finishing, user {} saved with successfully.", requestID, userResponse.name());
         return userResponse;
+    }
+
+    public UserDetailsService userDetailsService() {
+        log.info("Finding user by email to login.");
+        return username -> {
+            var user = userRepository.findByEmail(username);
+            if (user == null) throw new FlowException(
+                    "",
+                    HttpStatus.BAD_REQUEST,
+                    LocalDateTime.now(),
+                    "Error: User not found."
+            );
+            return user;
+        };
     }
 }
